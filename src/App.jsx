@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ScrollExpandMedia from './components/ScrollExpandMedia';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -316,30 +317,16 @@ function App() {
         </div>
       </section>
 
-      {/* CUISINE */}
-      <section className="cuisine night-section" id="cuisine">
-        <div className="container">
-          <span className="section-label reveal">Dining</span>
-          <h2 className="section-title reveal">A Feast Under the Stars</h2>
-          <div className="cuisine-bento reveal">
-            <div className="bento-large">
-              <img src="/images/dunes-sunset.jpg" alt="Terrasse" loading="lazy" />
-              <div className="bento-overlay">
-                <h3>The Terrace</h3>
-                <p>Traditional Moroccan cuisine prepared with local ingredients, served under open skies</p>
-              </div>
-            </div>
-            <div className="bento-text-card">
-              <h3>Private Dining</h3>
-              <p>Intimate desert dinner experiences curated by our chef — set amid the dunes with lantern light and a personal sommelier</p>
-            </div>
-            <div className="bento-text-card">
-              <h3>Tea Ceremony</h3>
-              <p>The traditional Moroccan mint tea ritual at sunset — three pours, each carrying its own meaning: life, love, and death</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* DECOUVRIR — vidéo qui grandit au scroll */}
+      <ScrollExpandMedia
+        mediaType="video"
+        mediaSrc="/videos/club13-intro.mp4"
+        posterSrc="/images/scroll-bg.jpg"
+        bgImageSrc="/images/scroll-bg.jpg"
+        titlePartStart="Decouvrez le"
+        titlePartEnd="Club 13 Paris"
+        scrollHint="Scroll pour découvrir"
+      />
 
       {/* EXCURSIONS */}
       <section className="excursions night-section" id="excursions">
