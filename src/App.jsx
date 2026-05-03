@@ -1,0 +1,424 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+function App() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isNavDark, setIsNavDark] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [stars, setStars] = useState([]);
+  const heroBgRef = useRef(null);
+
+  // Scroll logic for Nav and Parallax
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const transitionSection = document.getElementById('transition');
+          
+          setIsScrolled(scrollY > 60);
+
+          if (transitionSection) {
+            setIsNavDark(scrollY > transitionSection.offsetTop - 200);
+          } else {
+            setIsNavDark(false);
+          }
+
+          if (heroBgRef.current && scrollY < window.innerHeight) {
+            heroBgRef.current.style.transform = `translateY(${scrollY * 0.25}px)`;
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Body overflow toggle for mobile menu
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  // Intersection Observers for reveals
+  useEffect(() => {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    const elements = document.querySelectorAll('.reveal, .reveal-left, .stagger-up');
+    elements.forEach((el) => revealObserver.observe(el));
+
+    return () => revealObserver.disconnect();
+  }, []);
+
+  // Counter animation
+  useEffect(() => {
+    const animateCounter = (el) => {
+      const target = parseInt(el.getAttribute('data-count'), 10);
+      const duration = 1800;
+      const start = performance.now();
+      
+      const update = (now) => {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased);
+        if (progress < 1) requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+    };
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('[data-count]').forEach(animateCounter);
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    const statsStrip = document.querySelector('.stats-strip');
+    if (statsStrip) counterObserver.observe(statsStrip);
+
+    return () => counterObserver.disconnect();
+  }, []);
+
+  // Generate stars array once on mount
+  useEffect(() => {
+    const generatedStars = Array.from({ length: 70 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${35 + Math.random() * 60}%`,
+      dur: `${2 + Math.random() * 4}s`,
+      del: `${Math.random() * 3}s`,
+      size: `${1 + Math.random() * 2}px`
+    }));
+    setStars(generatedStars);
+  }, []);
+
+  const closeMenu = () => setIsMenuOpen(false);
+
+  return (
+    <>
+      {/* NAV */}
+      <nav className={`nav ${isScrolled ? 'scrolled' : ''} ${isNavDark ? 'nav-dark' : ''}`} id="nav">
+        <div className="nav-inner">
+          <a href="#" className="nav-logo text-xl font-['Cormorant_Garamond'] tracking-widest text-gold-light">CLUB 13</a>
+          <div className="nav-links">
+            <a href="#philosophy">Histoire</a>
+            <a href="#suites">Espaces</a>
+            <a href="#wellness">Prestations</a>
+            <a href="#cuisine">Dining</a>
+            <a href="#excursions">Reservation</a>
+          </div>
+          <a href="#reserve" className="nav-cta">Reserve</a>
+          <button 
+            className={`nav-hamburger ${isMenuOpen ? 'active' : ''}`} 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            aria-label="Toggle menu"
+          >
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
+
+      {/* MOBILE OVERLAY */}
+      <div className={`mobile-overlay ${isMenuOpen ? 'active' : ''}`} id="mobileOverlay">
+        <a href="#philosophy" className="mobile-link" onClick={closeMenu}>Story</a>
+        <a href="#suites" className="mobile-link" onClick={closeMenu}>Suites</a>
+        <a href="#wellness" className="mobile-link" onClick={closeMenu}>Wellness</a>
+        <a href="#cuisine" className="mobile-link" onClick={closeMenu}>Dining</a>
+        <a href="#excursions" className="mobile-link" onClick={closeMenu}>Experiences</a>
+        <a href="#reserve" className="mobile-link" onClick={closeMenu}>Reserve</a>
+      </div>
+
+      {/* HERO */}
+      <section className="hero" id="hero">
+        <img 
+          ref={heroBgRef}
+          className="hero-bg" 
+          src="/images/hero-aerial.png"
+          alt="Club 13 Paris — vue aérienne"
+          loading="eager" 
+        />
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
+          <p className="hero-location cursor-pointer" onClick={() => window.location.href='https://maps.app.goo.gl/F9T36GXXNkd8zpW9A'} role="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" className="inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+            15 Avenue Hoche, Paris
+          </p>
+          <h1 className="hero-title">CLUB13 PARIS</h1>
+          <p className="hero-subtitle">Un temple du 7ème art unique à Paris, créé par Claude Lelouch.</p>
+          <div className="hero-line"></div>
+          <a href="/#reserve" className="hero-cta">DECOUVRIR LES ESPACES</a>
+        </div>
+        <div className="scroll-indicator">
+          <span>Scroll</span>
+          <div className="scroll-line"></div>
+        </div>
+      </section>
+
+      {/* PHILOSOPHY */}
+      <section className="philosophy day-section" id="philosophy">
+        <div className="container">
+          <div className="philosophy-grid">
+            <div className="philosophy-text reveal-left">
+              <span className="section-label">Notre histoire</span>
+              <h2 className="text-3xl font-bold mb-4">Un Lieu Unique et Mythique</h2>
+              <p>Crée par Claude Lelouch après le succès d’ « Un homme et une femme », le Club 13 a accueilli les plus grandes légendes du cinéma mondial : Charlie Chaplin, Orson Welles, Stanley Kubrick, Francis Ford Coppola, Martin Scorsese… Situé au coeur du triangle d’or parisien, ce lieu unique est encore à ce jour un lieu sacré du cinéma.</p>
+              <p>Temple du cinéma français depuis 1968, le Club 13 incarne l'excellence culturelle parisienne avec son histoire prestigieuse et son ambiance authentique. Idéalement situé entre l’Arc de Triomphe et le Parc Monceau, depuis plus de cinquante ans, le Club 13 vous ouvre ses portes du pour des projections privées. Lieu mythique et incontournable du 7ᵉ art, vous serez en immersion totale, plongé au cœur du monde cinématographie de Monsieur Claude Lelouch.</p>
+              <h2 className="text-3xl font-bold mt-6 mb-4">L’esprit du lieu</h2>
+              <p>Imaginé comme un lieu d’exception dédié aux multiples déclinaisons artistiques, le Club 13 est la conjugaison parfaite entre l’art de faire la fête le temps d’une privatisation du lieu ; et le 7eme art, bien sûr… avec sa salle de projection ouverte à la privatisation.</p>
+              <p>Pour un anniversaire, une soirée d’entreprise, un lancement de produit, une projection privée ou encore une soirée sur le thème du 7ᵉ art, tout est possible ! À vous de jouer et laisser s’exprimer votre imagination. Rendez vous au 15 avenue hoche.</p>
+            </div>
+            <div className="philosophy-image reveal">
+              <img src="/images/philosophy-riad.jpg" alt="Club 13 — espace intérieur" loading="lazy" />
+            </div>
+          </div>
+          <div className="stats-strip stagger-up">
+            <div className="stat reveal-child">
+              <span className="stat-value" data-count="1968">1968</span>
+              <span className="stat-label">Année de création</span>
+            </div>
+            <div className="stat reveal-child">
+              <span className="stat-value" data-count="4">4</span>
+              <span className="stat-label">Etages d'espaces privatisables</span>
+            </div>
+            <div className="stat reveal-child">
+              <span className="stat-value" data-count="2">2</span>
+              <span className="stat-label">Salles de Projection</span>
+            </div>
+            <div className="stat reveal-child">
+              <span className="stat-value" data-count="1009">1009</span>
+              <span className="stat-label">SURFACE TOTALE (m2)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="section-divider"></div>
+
+      {/* SUITES */}
+      <section className="suites day-section" id="suites">
+        <div className="container">
+          <span className="section-label reveal">Nos espaces</span>
+          <h2 className="section-title reveal">Un écosystème complet à votre service</h2>
+          <div className="suites-grid stagger-up">
+            <div className="suite-card reveal-child">
+              <div className="suite-image">
+                <img src="/images/suite-projections.jpg" alt="Projections et Locations" loading="lazy" />
+              </div>
+              <div className="suite-info">
+                <h3>Projections et Locations</h3>
+                <p>Deux salles de projection privées équipées, salles de montage professionnelle, bureaux production et services de post-production pour l'industrie cinématographique</p>
+                <span className="suite-price">From €480 / night</span>
+              </div>
+            </div>
+            <div className="suite-card reveal-child">
+              <div className="suite-image">
+                <img src="/images/suite-restaurant.jpg" alt="Restaurant" loading="lazy" />
+              </div>
+              <div className="suite-info">
+                <h3>Restaurant</h3>
+                <p>Cuisine française familiale, plats signature, service du lundi au vendredi midi, ambiance feutrée et décoration Sarah Lavoine</p>
+                <span className="suite-price">From €720 / night</span>
+              </div>
+            </div>
+            <div className="suite-card reveal-child">
+              <div className="suite-image">
+                <img src="/images/suite-evenementiel.jpg" alt="Événementiel" loading="lazy" />
+              </div>
+              <div className="suite-info">
+                <h3>Événementiel</h3>
+                <p>Privatisations, séminaires, lancements produits, soirées thématiques, capacité cocktail jusqu'à 100 personnes</p>
+                <span className="suite-price">From €560 / night</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRANSITION — DAY TO NIGHT */}
+      <section className="transition-section" id="transition">
+        <div id="stars">
+          {stars.map((star) => (
+            <div 
+              key={star.id} 
+              className="star" 
+              style={{
+                left: star.left,
+                top: star.top,
+                '--dur': star.dur,
+                '--del': star.del,
+                width: star.size,
+                height: star.size
+              }}
+            ></div>
+          ))}
+        </div>
+        <div className="transition-content reveal">
+          <div className="transition-line"></div>
+          <p className="transition-quote">Where the desert whispers<br/>and the stars ignite</p>
+          <div className="transition-line"></div>
+        </div>
+      </section>
+
+      {/* WELLNESS */}
+      <section className="wellness night-section" id="wellness">
+        <div className="night-glow"></div>
+        <div className="container">
+          <div className="wellness-hero reveal">
+            <img src="/images/wellness-hammam.png" alt="Espace Club 13" loading="lazy" />
+            <div className="wellness-overlay">
+              <span className="section-label">Club 13</span>
+              <h2>Nos Prestations</h2>
+              <p>Pour un anniversaire, une soirée d’entreprise, un lancement de produit, une projection privée ou encore une soirée sur le thème du 7ᵉ art, tout est possible !</p>
+            </div>
+          </div>
+          <div className="treatments-grid stagger-up">
+            <div className="treatment-card reveal-child">
+              <div className="treatment-icon">
+                <iconify-icon icon="lucide:droplets"></iconify-icon>
+              </div>
+              <h3>Hammam Ritual</h3>
+              <p>Traditional steam bathing with black soap and ghassoul clay, followed by an argan oil moisturizing treatment</p>
+              <span className="treatment-duration">90 minutes</span>
+            </div>
+            <div className="treatment-card reveal-child">
+              <div className="treatment-icon">
+                <iconify-icon icon="lucide:hand"></iconify-icon>
+              </div>
+              <h3>Argan Oil Massage</h3>
+              <p>Deep restoration using locally pressed argan oils, warm stone placement, and pressure point therapy</p>
+              <span className="treatment-duration">75 minutes</span>
+            </div>
+            <div className="treatment-card reveal-child">
+              <div className="treatment-icon">
+                <iconify-icon icon="lucide:sun"></iconify-icon>
+              </div>
+              <h3>Desert Yoga</h3>
+              <p>Sunrise meditation and vinyasa flow on the dunes, guided breathwork, and tea ceremony to close</p>
+              <span className="treatment-duration">60 minutes</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CUISINE */}
+      <section className="cuisine night-section" id="cuisine">
+        <div className="container">
+          <span className="section-label reveal">Dining</span>
+          <h2 className="section-title reveal">A Feast Under the Stars</h2>
+          <div className="cuisine-bento reveal">
+            <div className="bento-large">
+              <img src="/images/dunes-sunset.jpg" alt="Terrasse" loading="lazy" />
+              <div className="bento-overlay">
+                <h3>The Terrace</h3>
+                <p>Traditional Moroccan cuisine prepared with local ingredients, served under open skies</p>
+              </div>
+            </div>
+            <div className="bento-text-card">
+              <h3>Private Dining</h3>
+              <p>Intimate desert dinner experiences curated by our chef — set amid the dunes with lantern light and a personal sommelier</p>
+            </div>
+            <div className="bento-text-card">
+              <h3>Tea Ceremony</h3>
+              <p>The traditional Moroccan mint tea ritual at sunset — three pours, each carrying its own meaning: life, love, and death</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* EXCURSIONS */}
+      <section className="excursions night-section" id="excursions">
+        <div className="container">
+          <span className="section-label reveal">Desert Experiences</span>
+          <h2 className="section-title reveal">Written in the Sands</h2>
+          <div className="excursions-list">
+            <div className="excursion-card reveal">
+              <div className="excursion-image">
+                <img src="/images/dunes-sunset.jpg" alt="Caravane saharienne" loading="lazy" />
+              </div>
+              <div className="excursion-info">
+                <h3>Saharan Caravan</h3>
+                <p>A timeless journey across the dunes at golden hour. Ride through the Erg Chebbi on Berber-guided camels, stopping at a nomadic camp for traditional tea.</p>
+                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 3 hours</span>
+              </div>
+            </div>
+            <div className="excursion-card reveal">
+              <div className="excursion-image">
+                  <img src="/images/dunes-sunset.jpg" alt="Stargazing" loading="lazy" />
+              </div>
+              <div className="excursion-info">
+                <h3>Desert Stargazing</h3>
+                <p>Guided astronomy under some of the clearest skies on Earth. Our resident astronomer reveals constellations, planets, and the stories woven between them.</p>
+                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 2 hours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* RESERVE */}
+      <section className="reserve night-section" id="reserve">
+        <div className="reserve-bg">
+        </div>
+        <div className="reserve-overlay"></div>
+        <div className="reserve-content reveal">
+          <span className="section-label">Reserve</span>
+          <h2>Begin Your Journey</h2>
+          <p>Experience the magic of the Sahara — where silence speaks, sands shift, and time surrenders to the sky.</p>
+          <a href="#" className="reserve-cta">Book Your Stay</a>
+          <div className="reserve-contact">
+            <span>+212 535 578 200</span>
+            <span>reservations@sirocco.ma</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="container">
+          <div className="footer-grid">
+            <div className="footer-col">
+              <h4>SIROCCO</h4>
+              <p>Luxury Desert Retreat<br/>Route de Merzouga, Erg Chebbi<br/>Merzouga 52202, Morocco</p>
+            </div>
+            <div className="footer-col">
+              <h4>Explore</h4>
+              <a href="#philosophy">Our Story</a>
+              <a href="#suites">Suites</a>
+              <a href="#wellness">Wellness</a>
+              <a href="#cuisine">Dining</a>
+              <a href="#excursions">Experiences</a>
+            </div>
+            <div className="footer-col">
+              <h4>Connect</h4>
+              <a href="#">Instagram</a>
+              <a href="#">Facebook</a>
+              <a href="#">Pinterest</a>
+              <a href="#">TripAdvisor</a>
+            </div>
+          </div>
+          <div className="footer-bottom">
+            <p>© {new Date().getFullYear()} Sirocco. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+export default App;
