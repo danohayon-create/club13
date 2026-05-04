@@ -24,7 +24,13 @@
 .sem-bg-tint {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    to bottom,
+    var(--night, #0A0F1E) 0%,
+    rgba(10, 15, 30, 0.15) 32%,
+    rgba(10, 15, 30, 0.15) 68%,
+    var(--night, #0A0F1E) 100%
+  );
 }
 
 /* Stage : zone centrale qui contient le média + le titre superposés */
@@ -51,6 +57,48 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   z-index: 0;
   pointer-events: none;
+}
+
+/* Shine border : un anneau lumineux animé qui apparaît quand la vidéo est en grand format
+   - utilise un radial-gradient en background-size 300% qui se déplace
+   - le mask trace un anneau fin (épaisseur = padding) en excluant l'intérieur
+   - opacité pilotée par --shine-opacity (calculé en JS depuis scrollProgress) */
+.sem-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* épaisseur de la bordure */
+  background: radial-gradient(
+    circle at 50% 50%,
+    transparent,
+    transparent,
+    var(--gold, #D4A853),
+    transparent,
+    transparent
+  );
+  background-size: 300% 300%;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+          mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: sem-shine 10s linear infinite;
+  opacity: var(--shine-opacity, 0);
+  pointer-events: none;
+}
+
+@keyframes sem-shine {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 300% 300%; }
+}
+
+/* Respect des préférences d'accessibilité : pas d'animation si l'utilisateur l'a désactivé */
+@media (prefers-reduced-motion: reduce) {
+  .sem-media::after { animation: none; }
 }
 
 .sem-media-wrap {

@@ -215,7 +215,12 @@ const ScrollExpandMedia = ({
         {/* Média centré, taille animée par le scroll */}
         <div
           className="sem-media"
-          style={{ width: `${mediaWidth}px`, height: `${mediaHeight}px` }}
+          style={{
+            width: `${mediaWidth}px`,
+            height: `${mediaHeight}px`,
+            // Shine border : invisible au début, fade-in entre 70% et 100% du scroll
+            '--shine-opacity': Math.max(0, Math.min(1, (scrollProgress - 0.7) / 0.3)),
+          }}
         >
           {renderMedia()}
           <motion.div

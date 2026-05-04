@@ -277,6 +277,16 @@ function App() {
         </div>
       </section>
 
+      {/* DECOUVRIR — vidéo qui grandit au scroll jusqu'au plein écran */}
+      <ScrollExpandMedia
+        mediaType="video"
+        mediaSrc="/videos/club13-intro.mp4"
+        posterSrc="/images/scroll-bg.jpg"
+        bgImageSrc="/images/scroll-bg.jpg"
+        titlePartStart="Decouvrez le"
+        titlePartEnd="Club 13 Paris"
+      />
+
       {/* WELLNESS */}
       <section className="wellness night-section" id="wellness">
         <div className="night-glow"></div>
@@ -291,16 +301,6 @@ function App() {
           </div>
         </div>
       </section>
-
-      {/* DECOUVRIR — vidéo qui grandit au scroll jusqu'au plein écran */}
-      <ScrollExpandMedia
-        mediaType="video"
-        mediaSrc="/videos/club13-intro.mp4"
-        posterSrc="/images/scroll-bg.jpg"
-        bgImageSrc="/images/scroll-bg.jpg"
-        titlePartStart="Decouvrez le"
-        titlePartEnd="Club 13 Paris"
-      />
 
       {/* EXCURSIONS */}
       <section className="excursions night-section" id="excursions">
@@ -366,6 +366,7 @@ function App() {
       {/* RESERVE */}
       <section className="reserve night-section" id="reserve">
         <div className="reserve-bg">
+          <img src="/images/reserve-bg.jpg" alt="Club 13 — salle de projection Claude Lelouch" loading="lazy" />
         </div>
         <div className="reserve-overlay"></div>
         <div className="reserve-content reveal">
