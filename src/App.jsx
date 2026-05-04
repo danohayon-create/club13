@@ -305,17 +305,17 @@ function App() {
       {/* EXCURSIONS */}
       <section className="excursions night-section" id="excursions">
         <div className="container">
-          <span className="section-label reveal">Desert Experiences</span>
-          <h2 className="section-title reveal">Written in the Sands</h2>
+          <span className="section-label reveal">Nos offres</span>
+          <h2 className="section-title reveal">Des Prestations sur mesure</h2>
           <div className="excursions-list">
             <div className="excursion-card reveal">
               <div className="excursion-image">
                 <img src="/images/excursion-1.jpg" alt="Excursion 1" loading="lazy" />
               </div>
               <div className="excursion-info">
-                <h3>Saharan Caravan</h3>
-                <p>A timeless journey across the dunes at golden hour. Ride through the Erg Chebbi on Berber-guided camels, stopping at a nomadic camp for traditional tea.</p>
-                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 3 hours</span>
+                <h3>Projection</h3>
+                <p>Organisation d'une projection de film (copie fournie ou copie louée) dans une des deux salles du Club 13. Nos salles sont privatisables et équipées de matériel de pointe vous offrant une expérience cinématographique inédite.</p>
+                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> de 7H à Minuit</span>
               </div>
             </div>
             <div className="excursion-card reveal">
@@ -323,9 +323,10 @@ function App() {
                 <img src="/images/excursion-2.jpg" alt="Excursion 2" loading="lazy" />
               </div>
               <div className="excursion-info">
-                <h3>Desert Stargazing</h3>
-                <p>Guided astronomy under some of the clearest skies on Earth. Our resident astronomer reveals constellations, planets, and the stories woven between them.</p>
-                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 2 hours</span>
+                <h3>Restauration - Service traiteur haut de gamme</h3>
+                <p>Petit déjeuner & brunch, Déjeuner, Apéritifs, Cocktail dinatoire, Diner. Nos formules de restauration sont entièrement personnalisables et adaptées à vos besoins, avec une cuisine française familiale et des plats signature élaborés par nos chefs.
+.</p>
+                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> de 7H à Minuit</span>
               </div>
             </div>
             <div className="excursion-card reveal">
@@ -333,9 +334,9 @@ function App() {
                 <img src="/images/excursion-3.jpg" alt="Excursion 3" loading="lazy" />
               </div>
               <div className="excursion-info">
-                <h3>Titre à compléter</h3>
-                <p>Description à compléter — remplace ce texte par la description de la troisième prestation / espace.</p>
-                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 2 hours</span>
+                <h3>Junket Interview</h3>
+                <p>Plongez vos tournages dans l'atmosphère mythique et feutrée du Club 13. Nous offrons un cadre prestigieux et une logistique technique de pointe pour vos interviews presse, garantissant une image aussi authentique que sophistiquée.</p>
+                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> Salles d'enregistrement mises à disposition</span>
               </div>
             </div>
             <div className="excursion-card reveal">
@@ -343,9 +344,9 @@ function App() {
                 <img src="/images/excursion-4.jpg" alt="Excursion 4" loading="lazy" />
               </div>
               <div className="excursion-info">
-                <h3>Titre à compléter</h3>
-                <p>Description à compléter — remplace ce texte par la description de la quatrième prestation / espace.</p>
-                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 2 hours</span>
+                <h3>Networking, Conférence, Master Class</h3>
+                <p>Le Club 13 vous ouvre ses portes pour des Master Class, conférences ou événements de networking d'exception.  Nos espaces sont conçus pour favoriser les échanges et l'inspiration.</p>
+                <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> Nos salons sont adaptés à vos besoins</span>
               </div>
             </div>
             <div className="excursion-card reveal">
@@ -353,8 +354,8 @@ function App() {
                 <img src="/images/excursion-5.jpg" alt="Excursion 5" loading="lazy" />
               </div>
               <div className="excursion-info">
-                <h3>Titre à compléter</h3>
-                <p>Description à compléter — remplace ce texte par la description de la cinquième prestation / espace.</p>
+                <h3>Tournage - Shooting Photos</h3>
+                <p>Sublimez vos productions dans un cadre cinématographique iconique où l'élégance intemporelle rencontre une modernité technique absolue. Que ce soit pour des tournages de films, des spots publicitaires ou des séances photo de mode, profitez d'une mise en scène naturelle et prestigieuse pour donner une dimension unique à vos images.</p>
                 <span className="excursion-duration"><iconify-icon icon="lucide:clock"></iconify-icon> 2 hours</span>
               </div>
             </div>
@@ -397,8 +398,8 @@ function App() {
             </div>
             <div className="footer-col">
               <h4>Connect</h4>
-              <a href="#">Instagram</a>
-              <a href="#">Facebook</a>
+              <a href="https://www.instagram.com/leclub13/" target="_blank" rel="noopener noreferrer">Instagram</a>
+              <a href="https://www.facebook.com/LeClub13/?locale=fr_FR" target="_blank" rel="noopener noreferrer">Facebook</a>
             </div>
           </div>
           <div className="footer-bottom">
