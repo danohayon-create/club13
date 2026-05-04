@@ -100,6 +100,11 @@ const ScrollExpandMedia = ({
         if (e.deltaY < 0) tryCollapse(e);
         return;
       }
+      // Si l'utilisateur scroll vers le HAUT et qu'on est déjà au début (progress=0),
+      // on laisse le scroll naturel se faire pour pouvoir remonter aux sections précédentes
+      if (e.deltaY < 0 && progressRef.current <= 0) {
+        return;
+      }
       e.preventDefault();
       updateProgress(e.deltaY * 0.0009);
     };
@@ -115,6 +120,11 @@ const ScrollExpandMedia = ({
 
       if (mediaFullyExpanded) {
         if (deltaY < -20) tryCollapse(e);
+        return;
+      }
+      // Pareil sur mobile : si on swipe vers le bas (= scroll up) et qu'on est à progress=0,
+      // on laisse le scroll naturel pour pouvoir remonter à la section précédente
+      if (deltaY < 0 && progressRef.current <= 0) {
         return;
       }
       e.preventDefault();
