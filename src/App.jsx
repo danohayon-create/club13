@@ -421,7 +421,7 @@ function App() {
           <span className="section-label reveal">Témoignages</span>
           <h2 className="section-title reveal">Ils nous ont fait confiance</h2>
           <BrandLogos />
-
+          <span className="section-label press-section-label reveal">Presse</span>
           <h2 className="section-title press-section-title reveal">Le Club 13 dans la lumière des médias</h2>
           <PressTestimonial />
         </div>

@@ -241,7 +241,16 @@ a{text-decoration:none;color:inherit}
 .reserve-map-section{padding:60px 0 80px}
 .testimonials{padding:80px 0 120px;position:relative}
 .testimonials .section-title{margin-bottom:32px}
-.testimonials .press-section-title{margin-top:120px;margin-bottom:0}
+.testimonials .press-section-label{display:block;margin-top:120px;padding-top:60px;border-top:1px solid rgba(212,168,83,0.15)}
+.testimonials .press-section-title{margin-bottom:8px}
+
+/* Trait or fin (1px) au-dessus des sections clés — même style que le trait au-dessus des stats */
+.reserve>.container{border-top:1px solid rgba(212,168,83,0.15)}
+.reserve-map-section .container{border-top:1px solid rgba(212,168,83,0.15);padding-top:60px}
+.testimonials .container{border-top:1px solid rgba(212,168,83,0.15);padding-top:60px}
+
+/* Réduit l'espace entre 'Le Club 13 dans la lumière des médias' et le carrousel presse */
+.testimonials .press-testimonial{padding-top:24px}
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:1024px){

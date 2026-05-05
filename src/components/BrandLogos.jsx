@@ -22,7 +22,7 @@ const brands = [
   { id: 'cercle',       name: 'Cercle Entreprises & Libertés', logo: '/images/logos/cercle.png' },
 ];
 
-const PLACEHOLDER_LABEL = 'grandes maisons du cinéma';
+const PLACEHOLDER_LABEL = 'Les Clients du Club 13';
 
 export default function BrandLogos() {
   const [hoveredId, setHoveredId] = useState(null);
@@ -67,20 +67,30 @@ export default function BrandLogos() {
               onMouseEnter={() => setHoveredId(id)}
               onMouseLeave={() => setHoveredId(null)}
             >
+              {/* Le logo est appliqué comme MASK CSS sur ce span coloré.
+                  Au repos : couleur cream-muted (gris clair lisible).
+                  Au hover : couleur gold (var --gold).
+                  Le PNG source doit avoir un fond transparent. */}
+              <span
+                className="brand-logo-mask"
+                style={{
+                  WebkitMaskImage: `url(${logo})`,
+                  maskImage: `url(${logo})`,
+                }}
+                aria-hidden="true"
+              ></span>
+              {/* Fallback texte si le logo ne charge pas */}
+              <span className="brand-logo-fallback">{name}</span>
+              {/* Image cachée juste pour détecter une erreur de chargement */}
               <img
                 src={logo}
-                alt={name}
+                alt=""
+                aria-hidden="true"
+                style={{ display: 'none' }}
                 onError={(e) => {
-                  // Si le logo n'existe pas, on affiche le nom à la place
-                  e.currentTarget.style.display = 'none';
-                  if (e.currentTarget.nextElementSibling) {
-                    e.currentTarget.nextElementSibling.style.display = 'inline';
-                  }
+                  e.currentTarget.parentElement.classList.add('logo-failed');
                 }}
               />
-              <span className="brand-logo-fallback" style={{ display: 'none' }}>
-                {name}
-              </span>
             </button>
           );
         })}
