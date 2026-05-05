@@ -5,6 +5,7 @@ import ParisMap from './components/ParisMap';
 import PressTestimonial from './components/PressTestimonial';
 import TestimonialsWall from './components/TestimonialsWall';
 import AuroraBackground from './components/AuroraBackground';
+import ImageGallery from './components/ImageGallery';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -432,6 +433,11 @@ function App() {
           <p className="client-section-subtitle reveal">Sous le regard des étoiles, ils ont choisi le Club 13</p>
           <TestimonialsWall />
         </div>
+      </section>
+
+      {/* GALERIE — bento horizontal draggable, modal au clic */}
+      <section className="gallery night-section" id="galerie">
+        <ImageGallery />
       </section>
 
       {/* FOOTER */}
