@@ -3,6 +3,8 @@ import ScrollExpandMedia from './components/ScrollExpandMedia';
 import BrandLogos from './components/BrandLogos';
 import ParisMap from './components/ParisMap';
 import PressTestimonial from './components/PressTestimonial';
+import TestimonialsWall from './components/TestimonialsWall';
+import AuroraBackground from './components/AuroraBackground';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -165,6 +167,7 @@ function App() {
           loading="eager" 
         />
         <div className="hero-overlay"></div>
+        <AuroraBackground className="hero-aurora" />
         <div className="hero-content">
           <p className="hero-location cursor-pointer" onClick={() => window.location.href='https://maps.app.goo.gl/F9T36GXXNkd8zpW9A'} role="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" className="inline mr-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
@@ -424,6 +427,10 @@ function App() {
           <span className="section-label press-section-label reveal">Presse</span>
           <h2 className="section-title press-section-title reveal">Le Club 13 dans la lumière des médias</h2>
           <PressTestimonial />
+
+          <h2 className="section-title client-section-title reveal">Ils ont vécu l'expérience Club 13</h2>
+          <p className="client-section-subtitle reveal">Sous le regard des étoiles, ils ont choisi le Club 13</p>
+          <TestimonialsWall />
         </div>
       </section>
 

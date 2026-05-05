@@ -243,6 +243,8 @@ a{text-decoration:none;color:inherit}
 .testimonials .section-title{margin-bottom:32px}
 .testimonials .press-section-label{display:block;margin-top:120px;padding-top:60px;border-top:1px solid rgba(212,168,83,0.15)}
 .testimonials .press-section-title{margin-bottom:8px}
+.testimonials .client-section-title{margin-top:120px;margin-bottom:12px;padding-top:60px;border-top:1px solid rgba(212,168,83,0.15)}
+.testimonials .client-section-subtitle{font-family:var(--font-display);font-weight:300;font-style:italic;font-size:clamp(1rem,1.8vw,1.25rem);color:var(--cream-muted);margin:0 0 16px;line-height:1.4}
 
 /* Trait or fin (1px) au-dessus des sections clés — même style que le trait au-dessus des stats */
 .reserve>.container{border-top:1px solid rgba(212,168,83,0.15)}

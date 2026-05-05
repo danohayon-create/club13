@@ -1,0 +1,149 @@
+/* TestimonialsWall — 3 colonnes d'avis qui défilent verticalement */
+
+.tw-wall {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 32px;
+  /* Hauteur visible des colonnes — overflow caché avec masque fade en haut/bas */
+  height: 640px;
+  overflow: hidden;
+  position: relative;
+  /* Masque CSS qui crée un fade-out vers transparent en haut et en bas */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+@media (min-width: 768px) {
+  .tw-wall {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tw-wall {
+    grid-template-columns: 1fr 1fr 1fr;
+    height: 680px;
+  }
+}
+
+/* Colonnes — la 2ème n'apparaît qu'à partir de 768px, la 3ème à partir de 1024px */
+.tw-column {
+  position: relative;
+  overflow: hidden;
+}
+
+.tw-column--md {
+  display: none;
+}
+@media (min-width: 768px) {
+  .tw-column--md { display: block; }
+}
+
+.tw-column--lg {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .tw-column--lg { display: block; }
+}
+
+/* Track animée — contient les cartes dupliquées 2× */
+.tw-column-track {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
+  will-change: transform;
+}
+
+/* === CARTE === */
+.tw-card {
+  width: 100%;
+  padding: 28px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(212, 168, 83, 0.12);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.tw-card-quote {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--cream, #F0E6D6);
+  margin: 0 0 24px;
+  letter-spacing: 0.005em;
+}
+
+.tw-card-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Cercle des initiales en or */
+.tw-card-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(212, 168, 83, 0.45);
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.1), rgba(212, 168, 83, 0.02));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.tw-card-initials span {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--gold, #D4A853);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.tw-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tw-card-name {
+  font-family: var(--font-display, 'Cormorant Garamond', serif);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--cream, #F0E6D6);
+  line-height: 1.2;
+}
+
+.tw-card-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tw-card-star {
+  font-size: 0.78rem;
+  color: var(--gold, #D4A853);
+}
+
+/* Respect des préférences d'accessibilité : pas de scroll auto si l'utilisateur l'a désactivé */
+@media (prefers-reduced-motion: reduce) {
+  .tw-column-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .tw-wall {
+    height: auto;
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+}
