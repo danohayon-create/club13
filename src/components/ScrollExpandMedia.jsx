@@ -3,16 +3,19 @@ import { motion } from 'framer-motion';
 import './ScrollExpandMedia.css';
 
 /**
- * ScrollExpandMedia
- * Section pleine hauteur où une vidéo (ou image) grandit progressivement
- * du centre vers le plein écran à mesure que l'utilisateur scrolle.
+ * ScrollExpandMedia — version "sticky scroll" (fiable à 100%)
  *
- * Adapté de https://21st.dev pour ce projet :
- *  - JSX (pas de TypeScript)
- *  - <img>/<video> standards (pas de next/image)
- *  - CSS custom (pas de Tailwind)
- *  - Hijack de la molette UNIQUEMENT quand la section est centrée à l'écran
- *    (sinon ça casserait la nav du reste de la page)
+ * Principe : la section fait 200dvh de haut. À l'intérieur, un conteneur sticky
+ * de 100dvh reste fixé en haut du viewport pendant que l'utilisateur scroll
+ * à travers les 200dvh. Le scroll progress se déduit directement de la position
+ * de la section dans le viewport — aucun hijack de molette, aucun listener wheel.
+ *
+ * Avantages vs l'ancienne approche scroll-hijack :
+ *  - Pas de race condition avec IntersectionObserver (problème : sur scroll rapide,
+ *    l'observer ne s'active pas à temps et le user passe la section sans effet)
+ *  - Comportement identique sur trackpad, molette, scrollbar, touch, clavier (Page Down…)
+ *  - Aucun blocage du scroll naturel
+ *  - Le user peut remonter sans contrainte
  */
 const ScrollExpandMedia = ({
   mediaType = 'video',
@@ -26,16 +29,10 @@ const ScrollExpandMedia = ({
   children,
 }) => {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showContent, setShowContent] = useState(false);
-  const [mediaFullyExpanded, setMediaFullyExpanded] = useState(false);
-  const [isActive, setIsActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
   const sectionRef = useRef(null);
-  const progressRef = useRef(0);
-  const touchStartY = useRef(0);
 
-  // Détection mobile
+  // Détection mobile (impacte la croissance max de la vidéo)
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -43,113 +40,49 @@ const ScrollExpandMedia = ({
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Active le hijack uniquement quand la section remplit ~95% du viewport
+  // Calcule scrollProgress depuis la position de la section dans le viewport.
+  // - rect.top > 0  → la section n'a pas encore atteint le haut du viewport (progress = 0)
+  // - rect.top entre 0 et -(sectionHeight - viewportHeight) → progress va de 0 à 1
+  // - rect.top < -(sectionHeight - viewportHeight) → l'utilisateur a scrollé au-delà (progress = 1)
   useEffect(() => {
-    if (!sectionRef.current) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        const ratio = entry.intersectionRatio;
-        setIsActive(ratio >= 0.9);
-        // Reset complet quand l'utilisateur sort vraiment de la section
-        if (ratio < 0.1) {
-          progressRef.current = 0;
-          setScrollProgress(0);
-          setMediaFullyExpanded(false);
-          setShowContent(false);
-        }
-      },
-      { threshold: [0, 0.1, 0.5, 0.9, 0.95, 1] }
-    );
-    obs.observe(sectionRef.current);
-    return () => obs.disconnect();
-  }, []);
+    let ticking = false;
 
-  // Hijack molette + touch pendant que la section est active
-  useEffect(() => {
-    if (!isActive) return;
+    const update = () => {
+      ticking = false;
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const sectionHeight = el.offsetHeight;
+      const viewportHeight = window.innerHeight;
+      const scrollable = sectionHeight - viewportHeight;
+      if (scrollable <= 0) return;
 
-    const updateProgress = (delta) => {
-      const next = Math.min(Math.max(progressRef.current + delta, 0), 1);
-      progressRef.current = next;
-      setScrollProgress(next);
+      let p;
+      if (rect.top > 0) p = 0;
+      else if (rect.top < -scrollable) p = 1;
+      else p = -rect.top / scrollable;
 
-      if (next >= 1) {
-        setMediaFullyExpanded(true);
-        setShowContent(true);
-      } else if (next < 0.75) {
-        setShowContent(false);
+      setScrollProgress(p);
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
       }
     };
 
-    const tryCollapse = (e) => {
-      // Ne re-collapser que si la section est bien alignée en haut
-      const rect = sectionRef.current?.getBoundingClientRect();
-      if (rect && rect.top >= -10) {
-        e.preventDefault();
-        setMediaFullyExpanded(false);
-        setShowContent(false);
-        progressRef.current = 0.99;
-        setScrollProgress(0.99);
-      }
-    };
-
-    const handleWheel = (e) => {
-      if (mediaFullyExpanded) {
-        // Quand la vidéo est plein écran, on laisse le scroll-down filer
-        // mais on retient le scroll-up pour permettre de re-collapser
-        if (e.deltaY < 0) tryCollapse(e);
-        return;
-      }
-      // Si l'utilisateur scroll vers le HAUT et qu'on est déjà au début (progress=0),
-      // on laisse le scroll naturel se faire pour pouvoir remonter aux sections précédentes
-      if (e.deltaY < 0 && progressRef.current <= 0) {
-        return;
-      }
-      e.preventDefault();
-      updateProgress(e.deltaY * 0.0009);
-    };
-
-    const handleTouchStart = (e) => {
-      touchStartY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e) => {
-      if (!touchStartY.current) return;
-      const touchY = e.touches[0].clientY;
-      const deltaY = touchStartY.current - touchY;
-
-      if (mediaFullyExpanded) {
-        if (deltaY < -20) tryCollapse(e);
-        return;
-      }
-      // Pareil sur mobile : si on swipe vers le bas (= scroll up) et qu'on est à progress=0,
-      // on laisse le scroll naturel pour pouvoir remonter à la section précédente
-      if (deltaY < 0 && progressRef.current <= 0) {
-        return;
-      }
-      e.preventDefault();
-      const factor = deltaY < 0 ? 0.008 : 0.005;
-      updateProgress(deltaY * factor);
-      touchStartY.current = touchY;
-    };
-
-    const handleTouchEnd = () => {
-      touchStartY.current = 0;
-    };
-
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update(); // calcul initial au mount
 
     return () => {
-      window.removeEventListener('wheel', handleWheel);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
     };
-  }, [isActive, mediaFullyExpanded]);
+  }, []);
 
+  const showContent = scrollProgress >= 0.75;
   const mediaWidth = 300 + scrollProgress * (isMobile ? 650 : 1250);
   const mediaHeight = 400 + scrollProgress * (isMobile ? 200 : 400);
   const textTranslateX = scrollProgress * (isMobile ? 180 : 150);
@@ -199,61 +132,63 @@ const ScrollExpandMedia = ({
 
   return (
     <section className="sem-section" ref={sectionRef}>
-      {/* Image de fond plein écran qui s'estompe au fur et à mesure */}
-      <motion.div
-        className="sem-bg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 - scrollProgress }}
-        transition={{ duration: 0.1 }}
-      >
-        <img src={bgImageSrc} alt="" />
-        <div className="sem-bg-tint" />
-      </motion.div>
-
-      {/* Stage : titre + média superposés */}
-      <div className="sem-stage">
-        {/* Média centré, taille animée par le scroll */}
-        <div
-          className="sem-media"
-          style={{
-            width: `${mediaWidth}px`,
-            height: `${mediaHeight}px`,
-            // Shine border : invisible au début, fade-in entre 70% et 100% du scroll
-            '--shine-opacity': Math.max(0, Math.min(1, (scrollProgress - 0.7) / 0.3)),
-          }}
+      {/* Conteneur sticky de 100dvh : reste fixé en haut du viewport pendant le scroll */}
+      <div className="sem-sticky">
+        {/* Image de fond plein écran qui s'estompe quand la vidéo grandit */}
+        <motion.div
+          className="sem-bg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 - scrollProgress }}
+          transition={{ duration: 0.1 }}
         >
-          {renderMedia()}
-          <motion.div
-            className="sem-media-tint"
-            initial={{ opacity: 0.7 }}
-            animate={{ opacity: 0.5 - scrollProgress * 0.3 }}
-            transition={{ duration: 0.2 }}
-          />
-          {scrollHint && (
-            <p className="sem-hint" style={{ transform: `translateX(${textTranslateX}vw)` }}>
-              {scrollHint}
-            </p>
-          )}
-        </div>
+          <img src={bgImageSrc} alt="" />
+          <div className="sem-bg-tint" />
+        </motion.div>
 
-        {/* Titre — les deux parties s'écartent à mesure que le scroll progresse */}
-        <div className={`sem-title ${textBlend ? 'sem-title--blend' : ''}`}>
-          <h2
-            className="sem-title-line"
-            style={{ transform: `translateX(-${textTranslateX}vw)` }}
+        <div className="sem-stage">
+          {/* Média centré, taille animée par scrollProgress */}
+          <div
+            className="sem-media"
+            style={{
+              width: `${mediaWidth}px`,
+              height: `${mediaHeight}px`,
+              // Shine border : invisible au début, fade-in entre 70% et 100% du scroll
+              '--shine-opacity': Math.max(0, Math.min(1, (scrollProgress - 0.7) / 0.3)),
+            }}
           >
-            {titlePartStart}
-          </h2>
-          <h2
-            className="sem-title-line"
-            style={{ transform: `translateX(${textTranslateX}vw)` }}
-          >
-            {titlePartEnd}
-          </h2>
+            {renderMedia()}
+            <motion.div
+              className="sem-media-tint"
+              initial={{ opacity: 0.7 }}
+              animate={{ opacity: 0.5 - scrollProgress * 0.3 }}
+              transition={{ duration: 0.2 }}
+            />
+            {scrollHint && (
+              <p className="sem-hint" style={{ transform: `translateX(${textTranslateX}vw)` }}>
+                {scrollHint}
+              </p>
+            )}
+          </div>
+
+          {/* Titre — les deux parties s'écartent à mesure que le scroll progresse */}
+          <div className={`sem-title ${textBlend ? 'sem-title--blend' : ''}`}>
+            <h2
+              className="sem-title-line"
+              style={{ transform: `translateX(-${textTranslateX}vw)` }}
+            >
+              {titlePartStart}
+            </h2>
+            <h2
+              className="sem-title-line"
+              style={{ transform: `translateX(${textTranslateX}vw)` }}
+            >
+              {titlePartEnd}
+            </h2>
+          </div>
         </div>
       </div>
 
-      {/* Contenu optionnel sous la vidéo expandée */}
+      {/* Contenu optionnel sous la section sticky (apparaît quand video proche du plein écran) */}
       {children && (
         <motion.div
           className="sem-content"

@@ -6,6 +6,7 @@ function App() {
   const [isNavDark, setIsNavDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [stars, setStars] = useState([]);
+  const [wellnessStars, setWellnessStars] = useState([]);
   const heroBgRef = useRef(null);
 
   // Scroll logic for Nav and Parallax
@@ -96,17 +97,21 @@ function App() {
     return () => counterObserver.disconnect();
   }, []);
 
-  // Generate stars array once on mount
+  // Generate stars arrays once on mount (transition + wellness)
   useEffect(() => {
-    const generatedStars = Array.from({ length: 70 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${35 + Math.random() * 60}%`,
-      dur: `${2 + Math.random() * 4}s`,
-      del: `${Math.random() * 3}s`,
-      size: `${1 + Math.random() * 2}px`
-    }));
-    setStars(generatedStars);
+    const makeStars = (count, topMin, topMax) =>
+      Array.from({ length: count }).map((_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        top: `${topMin + Math.random() * (topMax - topMin)}%`,
+        dur: `${2 + Math.random() * 4}s`,
+        del: `${Math.random() * 3}s`,
+        size: `${1 + Math.random() * 2}px`
+      }));
+    // Section transition : étoiles dans le tiers inférieur (suit le dégradé jour→nuit)
+    setStars(makeStars(70, 35, 95));
+    // Section wellness : étoiles sur toute la hauteur (fond nuit uniforme)
+    setWellnessStars(makeStars(50, 0, 100));
   }, []);
 
   const closeMenu = () => setIsMenuOpen(false);
@@ -165,7 +170,7 @@ function App() {
           <img className="hero-title-img" src="/images/signature-lelouch.png" alt="Signature Claude Lelouch — Club 13 Paris" />
           <p className="hero-subtitle">Un temple du 7ème art unique à Paris, créé par Claude Lelouch.</p>
           <div className="hero-line"></div>
-          <a href="/#reserve" className="hero-cta">DECOUVRIR LES ESPACES</a>
+          <a href="/#reserve" className="hero-cta">Réserver le Club 13</a>
         </div>
         <div className="scroll-indicator">
           <span>Scroll</span>
@@ -290,6 +295,21 @@ function App() {
       {/* WELLNESS */}
       <section className="wellness night-section" id="wellness">
         <div className="night-glow"></div>
+        {/* Étoiles décoratives qui scintillent sur le fond nuit */}
+        {wellnessStars.map((star) => (
+          <div
+            key={`ws-${star.id}`}
+            className="star"
+            style={{
+              left: star.left,
+              top: star.top,
+              '--dur': star.dur,
+              '--del': star.del,
+              width: star.size,
+              height: star.size
+            }}
+          ></div>
+        ))}
         <div className="container">
           <div className="wellness-intro reveal">
             <span className="section-label">Club 13</span>
@@ -369,14 +389,20 @@ function App() {
           <img src="/images/reserve-bg.jpg" alt="Club 13 — salle de projection Claude Lelouch" loading="lazy" />
         </div>
         <div className="reserve-overlay"></div>
-        <div className="reserve-content reveal">
-          <span className="section-label">Réservation</span>
-          <h2>Contactez Nous</h2>
-          <p>Pour une projection ou tout autre événnement, n'hésitez pas à nous contacter.</p>
-          <a href="#" className="reserve-cta">Réservez le Club 13</a>
-          <div className="reserve-contact">
-            <span>+33 1 44 13 11 14</span>
-            <span>contact@club13.fr</span>
+        <div className="container">
+          <div className="reserve-content reveal">
+            <div className="reserve-content-top">
+              <span className="section-label">Réservation</span>
+              <h2>Contactez Nous</h2>
+              <p>Pour une projection ou tout autre événnement, n'hésitez pas à nous contacter.</p>
+              <a href="#" className="reserve-cta">Cliquez pour un Devis En Ligne</a>
+            </div>
+            <div className="reserve-content-bottom">
+              <div className="reserve-contact">
+                <span>+33 1 44 13 11 14</span>
+                <span>contact@club13.fr</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

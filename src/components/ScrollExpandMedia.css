@@ -1,11 +1,22 @@
 /* ScrollExpandMedia — section pleine hauteur avec média qui s'agrandit au scroll */
 
+/* Section haute (200dvh) qui sert de "rail" pour le scroll-through.
+   L'utilisateur scrolle naturellement à travers, et le sticky inner reste fixé. */
 .sem-section {
   position: relative;
-  min-height: 100dvh;
-  overflow: hidden;
+  min-height: 200dvh;
   background: var(--night, #0A0F1E);
   isolation: isolate;
+}
+
+/* Conteneur sticky : reste collé en haut du viewport pendant que le user scrolle.
+   C'est ici que la vidéo grandit et que l'image de fond s'estompe. */
+.sem-sticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
 }
 
 /* Fond plein écran qui s'estompe quand la vidéo grandit */
