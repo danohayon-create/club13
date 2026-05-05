@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ScrollExpandMedia from './components/ScrollExpandMedia';
+import BrandLogos from './components/BrandLogos';
+import ParisMap from './components/ParisMap';
+import PressTestimonial from './components/PressTestimonial';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -128,8 +131,8 @@ function App() {
             <a href="#philosophy">Histoire</a>
             <a href="#suites">Espaces</a>
             <a href="#wellness">Prestations</a>
-            <a href="#cuisine">Dining</a>
             <a href="#excursions">Reservation</a>
+            <a href="#temoignages">Témoignages</a>
           </div>
           <a href="#reserve" className="nav-cta">Reservation</a>
           <button 
@@ -147,8 +150,8 @@ function App() {
         <a href="#philosophy" className="mobile-link" onClick={closeMenu}>Histoire</a>
         <a href="#suites" className="mobile-link" onClick={closeMenu}>Espaces</a>
         <a href="#wellness" className="mobile-link" onClick={closeMenu}>Prestations</a>
-        <a href="#cuisine" className="mobile-link" onClick={closeMenu}>Dining</a>
         <a href="#excursions" className="mobile-link" onClick={closeMenu}>Reservation</a>
+        <a href="#temoignages" className="mobile-link" onClick={closeMenu}>Témoignages</a>
         <a href="#reserve" className="mobile-link" onClick={closeMenu}>Reservation</a>
       </div>
 
@@ -395,15 +398,32 @@ function App() {
               <span className="section-label">Réservation</span>
               <h2>Contactez Nous</h2>
               <p>Pour une projection ou tout autre événnement, n'hésitez pas à nous contacter.</p>
-              <a href="#" className="reserve-cta">Cliquez pour un Devis En Ligne</a>
-            </div>
-            <div className="reserve-content-bottom">
+              <a href="#" className="reserve-cta">Devis En Ligne</a>
               <div className="reserve-contact">
-                <span>+33 1 44 13 11 14</span>
-                <span>contact@club13.fr</span>
+                <span><iconify-icon icon="lucide:phone"></iconify-icon> +33 1 44 13 11 14</span>
+                <span><iconify-icon icon="lucide:mail"></iconify-icon> contact@club13.fr</span>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* MAP — placée juste après la Réservation, sous l'image Lelouch */}
+      <section className="reserve-map-section night-section">
+        <div className="container">
+          <ParisMap />
+        </div>
+      </section>
+
+      {/* TÉMOIGNAGES — références clients + presse */}
+      <section className="testimonials night-section" id="temoignages">
+        <div className="container">
+          <span className="section-label reveal">Témoignages</span>
+          <h2 className="section-title reveal">Ils nous ont fait confiance</h2>
+          <BrandLogos />
+
+          <h2 className="section-title press-section-title reveal">Le Club 13 dans la lumière des médias</h2>
+          <PressTestimonial />
         </div>
       </section>
 
@@ -417,11 +437,9 @@ function App() {
             </div>
             <div className="footer-col">
               <h4>Explore</h4>
-              <a href="#philosophy">Our Story</a>
-              <a href="#suites">Suites</a>
-              <a href="#wellness">Wellness</a>
-              <a href="#cuisine">Dining</a>
-              <a href="#excursions">Experiences</a>
+              <a href="#philosophy">Histoire</a>
+              <a href="#suites">Espaces</a>
+              <a href="#wellness">Prestations</a>
             </div>
             <div className="footer-col">
               <h4>Connect</h4>
